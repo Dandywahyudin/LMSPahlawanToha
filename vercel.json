@@ -23,7 +23,7 @@
     "APP_ENV": "production",
     "APP_DEBUG": "false",
     "APP_URL": "https://smkpahlawantoha.vercel.app",
-    "APP_KEY": "=base64:d5/Aqo4zxvbmIr85ADMzWnu9K4hJGVxUphgqVxAgix8=",
+    "APP_KEY": "base64:jw4A3Mm9RdNjlJzv4LmQio0R8UVxGgMUNsYZHHMExpI=",
     
     "APP_CONFIG_CACHE": "/tmp/config.php",
     "APP_EVENTS_CACHE": "/tmp/events.php",
