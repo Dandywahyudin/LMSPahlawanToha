@@ -21,7 +21,7 @@
 
   "env": {
     "APP_ENV": "production",
-    "APP_DEBUG": "false",
+    "APP_DEBUG": "true",
     "APP_URL": "https://smkpahlawantoha.vercel.app",
     "APP_KEY": "base64:jw4A3Mm9RdNjlJzv4LmQio0R8UVxGgMUNsYZHHMExpI=",
     
