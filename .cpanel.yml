@@ -1,5 +1,26 @@
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/example/public_html/
-    - /bin/cp index.html $DEPLOYPATH
-    - /bin/cp style.css $DEPLOYPATH
+    - export DEPLOYPATH=/home/usernameanda/proyeklaravel/ # Ganti dengan path proyek Anda
+    # Baris berikut mengasumsikan Anda sudah berada di dalam $DEPLOYPATH saat skrip ini dijalankan
+    # atau bahwa DEPLOYPATH adalah root repo.
+    # cPanel mungkin menjalankan ini dari root repo.
+
+    # 1. Install/Update Composer Dependencies
+    #    Anda mungkin perlu path absolut ke composer dan PHP versi yang benar
+    #    Contoh untuk PHP 8.2 (sesuaikan versi):
+    - php /opt/cpanel/ea-php82/root/usr/bin/composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
+
+    # 2. Jalankan Migrasi (Hati-hati dengan ini, pastikan .env sudah benar)
+    - php artisan migrate --force --no-interaction
+
+    # 3. Optimasi (setelah .env pasti benar)
+    - php artisan config:cache
+    - php artisan route:cache
+    # - php artisan view:cache # Aktifkan jika perlu
+
+    # 4. Mungkin membersihkan cache lama (opsional)
+    - php artisan cache:clear
+
+    # Perintah lain yang mungkin Anda butuhkan, seperti build aset frontend jika tidak dilakukan di pipeline CI/CD lain
+    # - npm install
+    # - npm run build
