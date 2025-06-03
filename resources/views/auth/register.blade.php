@@ -8,6 +8,11 @@
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
+        <div>
+            <x-input-label for="no_peserta" :value="__('no_peserta')" />
+            <x-text-input id="no_peserta" class="block mt-1 w-full" type="text" name="no_peserta" :value="old('no_peserta')" required autofocus autocomplete="no_peserta" />
+            <x-input-error :messages="$errors->get('no_peserta')" class="mt-2" />
+        </div>
 
         <!-- Email Address -->
         <div class="mt-4">

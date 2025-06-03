@@ -5,57 +5,66 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use League\Csv\Reader;
 
 class UserSeeder extends Seeder
 {
+    /**
+     * Jalankan seeder untuk mengisi database.
+     *
+     * @return void
+     */
     public function run()
     {
-        $siswaData = [
-            ['name' => 'Alika Zhalmia', 'password' => '0081145937'],
-            ['name' => 'Alma', 'password' => '0076683237'],
-            ['name' => 'Alya Agustina', 'password' => '0078318714'],
-            ['name' => 'Asep Rodian', 'password' => '0065082911'],
-            ['name' => 'Ayu Ning Tyas', 'password' => '0089636154'],
-            ['name' => 'Dede Sakti Ramdani', 'password' => '0061686418'],
-            ['name' => 'Devina Ayu Lestari', 'password' => '0061206110'],
-            ['name' => 'Dita Rahma Dini', 'password' => '0074543510'],
-            ['name' => 'Dona Anastasya', 'password' => '0083070831'],
-            ['name' => 'Erik Diyas Rahmadan', 'password' => '0153643079'],
-            ['name' => 'Erik Muhamad', 'password' => '0072376012'],
-            ['name' => 'Fajar Jaya Kusuma Garcia', 'password' => '0086108498'],
-            ['name' => 'Kezia', 'password' => '0083827941'],
-            ['name' => 'Moh. Rahim Zulkifli', 'password' => '0085462232'],
-            ['name' => 'Muhamad Arya Aditya', 'password' => '0086413361'],
-            ['name' => 'Muhamad Fathir Al Farizi', 'password' => '0071917030'],
-            ['name' => 'Muhamad Ikhsan Alfari', 'password' => '0076070210'],
-            ['name' => 'Muhammad Fahmi Nur Naufal', 'password' => '0072476570'],
-            ['name' => 'Muhammad Naufal Al Ghifari', 'password' => '0077979327'],
-            ['name' => 'Reva Maldini', 'password' => '0065339060'],
-            ['name' => 'Ririn Dwi Aryanti', 'password' => '3067398244'],
-            ['name' => 'Risma Yanti Pertiwi', 'password' => '0078936107'],
-            ['name' => 'Riyanti Nurdini', 'password' => '0082270472'],
-            ['name' => 'Sabrina Salsabila', 'password' => '0072391957'],
-            ['name' => 'Saira Nur Ramadhanti', 'password' => '0074177523'],
-            ['name' => 'Salma Amelia Putri', 'password' => '0065626314'],
-            ['name' => 'Salma Aprilia Wulandari', 'password' => '0071714794'],
-            ['name' => 'Tiara Agustin Meilani', 'password' => '0085215066'],
-            ['name' => 'Virla Azzahra Ainur Rahman', 'password' => '0078661102'],
-            ['name' => 'Widjia As Serlina', 'password' => '0074685842'],
-            ['name' => 'Wiltri Nengsih Eka Pratama', 'password' => '0083568530'],
-            ['name' => 'Yanti Aryanti', 'password' => '3082524058'],
-            ['name' => 'Yuni Amelia', 'password' => '3070379172'],
-        ];
+        // Tentukan path (lokasi) ke file CSV Anda.
+        // Pastikan path ini benar.
+        // Sebagai contoh, buat folder 'csv' di dalam 'database/seeders/'
+        // lalu letakkan file CSV Anda di sana.
+        $csvFilePath = database_path('seeders/csv/MASTER DATA PSAT.xlsx - master data kartu peserta (1).csv');
 
-        foreach ($siswaData as $siswa) {
-            $email = strtolower(str_replace(' ', '.', $siswa['name'])) . '@example.com';
-            
+        // Cek apakah file CSV ditemukan
+        if (!file_exists($csvFilePath)) {
+            $this->command->error("File CSV tidak ditemukan di: " . $csvFilePath); // Tampilkan pesan error jika tidak ada
+            return; // Hentikan proses jika file tidak ada
+        }
+
+        // Buat instance untuk membaca CSV
+        // 'r' berarti file dibuka untuk mode membaca (read)
+        $csv = Reader::createFromPath($csvFilePath, 'r');
+        $csv->setHeaderOffset(0); // Anggap baris pertama CSV adalah header (judul kolom)
+
+        $records = $csv->getRecords(); // Ambil semua baris data dari CSV
+
+        // Looping untuk setiap baris data di CSV
+        foreach ($records as $record) {
+            // Ambil data dari setiap kolom berdasarkan nama header di CSV.
+            // Sesuaikan 'Nama Lengkap', 'No Peserta', 'Password' jika nama header di file CSV Anda berbeda.
+            // Operator '?? null' digunakan untuk keamanan, jika kolom tidak ada maka nilainya akan null.
+            $name = $record['NAMA'] ?? null;
+            $noPeserta = $record['NO.PESERTA'] ?? null;
+            $password = $record['PASSWORD'] ?? null;
+
+            // Lewati baris ini jika data penting (nama, no peserta, atau password) kosong
+            if (is_null($name) || is_null($noPeserta) || is_null($password)) {
+                $this->command->warn("Melewati baris karena data tidak lengkap: " . json_encode($record));
+                continue; // Lanjut ke baris berikutnya
+            }
+
+            // Buat email dari nama (sesuai contoh Anda)
+            // Ubah nama menjadi huruf kecil, ganti spasi dengan titik, lalu tambahkan @example.com
+            $email = strtolower(str_replace(' ', '.', $name)) . '@example.com';
+
+            // Masukkan data ke tabel 'users'
             DB::table('users')->insert([
-                'name' => $siswa['name'],
+                'name' => $name,
                 'email' => $email,
-                'password' => Hash::make($siswa['password']),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'no_peserta' => $noPeserta,
+                'password' => Hash::make($password), // Enkripsi password sebelum disimpan
+                'created_at' => now(), // Timestamp kapan data dibuat
+                'updated_at' => now(), // Timestamp kapan data terakhir diubah
             ]);
         }
+
+        $this->command->info('Proses seeding data user dari CSV selesai!'); // Pesan jika berhasil
     }
 }

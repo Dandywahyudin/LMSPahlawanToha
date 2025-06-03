@@ -5,11 +5,11 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Email Address -->
+        <!-- No Peserta -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-input-label for="no_peserta" :value="__('No Peserta')" />
+            <x-text-input id="no_peserta" class="block mt-1 w-full" type="text" name="no_peserta" :value="old('no_peserta')" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('no_peserta')" class="mt-2" />
         </div>
 
         <!-- Password -->
@@ -38,7 +38,7 @@
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
-
+                
             <x-primary-button class="ms-3">
                 {{ __('Log in') }}
             </x-primary-button>
